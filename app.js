@@ -1,6 +1,6 @@
 import express from 'express'
 import {PORT,MongoDBURL} from './config.js'
-import{ MongoClient, ServerApiVersion } from "mongodb" ;
+import{ MongoClient, ObjectId, ServerApiVersion } from "mongodb" ;
 
 const app = express()
 
@@ -22,19 +22,38 @@ app.listen(PORT,()=> {
 })
 
 app.get('/', (req, res)=> {
+    //route show all books
    return res.status(200).send("<h1>Rassole!!<h1>")
 })
 
 app.get('/shop', (req, res)=> {
-   return res.status(200).send("<a href='/'> Welcome to de shop!</a>")
+
+   myBooks.find().toArray()
+   .then(response=>{
+       return res.status(200).send(response)
+   })
+   //return res.status(200).send('<a href='/'> Welcome to de shop! ${data.id}</a>')
+   .catch(err=>console.log(err))
 })
 
 app.get('/shop/:id', (req, res)=> {
+    //route show a specific book
     const data = req.params
-  return res.status(200).send('<a href='/'> Welcome to de shop! ${data.id}</a>')
+
+    const filter = {
+        "_id" : new ObjectId(data.id)
+    }
+    
+    myBooks.findOne(filter)
+    .then(response=>{
+        return res.status(200).send(response)
+    })
+  //return res.status(200).send('<a href='/'> Welcome to de shop! ${data.id}</a>')
+  .catch(err=>console.log(err))
 })
 
-app.post('/savebook',(req, res)=>{
+app.post('/admin/savebook', (req, res)=>{
+    // Route adds a new book
     const data = req.body
     if(!data.title)
     return res.status(400).send("No title found ye idiot.")
@@ -53,4 +72,42 @@ app.post('/savebook',(req, res)=>{
 
     })
     return res.status(201).send(JSON.stringify (data))
+})
+
+//  Added from my pc 
+
+app.delete('/admin/remove/:id', (req,res)=>{
+    const data = req.params
+    const filter = {
+        "_id" : new ObjectId(data.id)
+    }
+    
+    myBooks.deleteOne(filter)
+    .then(response=>{
+        return res.status(200).send(response)
+    })
+  //return res.status(200).send('<a href='/'> Welcome to de shop! ${data.id}</a>')
+  .catch(err=>console.log(err))   
+})
+
+app.put('/admin/update/:id', (req,res)=>{
+    const data = req.params
+    const docData = req.body
+    
+    const filter = {
+        "_id" : new ObjectId(data.id)
+    }
+
+    const updDoc = {
+        $set: {
+           ...docData //docData.price, docData.cover
+        }
+    }
+
+    myBooks.updateOne(filter, updDoc)
+   .then(response=>{
+    return res.status(200).send(response)
+    
+    })
+    .catch(err=>console.log(err)) 
 })
