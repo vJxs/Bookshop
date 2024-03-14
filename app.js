@@ -64,14 +64,11 @@ app.post('/admin/savebook', (req, res)=>{
     if(!data.price)
     return res.status(400).send("No price here, check somewhere else")
 
-    myBooks.insertOne(data, (error, response)=>{
-        if(error){
-            console.log("An error occurred!)")
-            return res.sendStatus(500)
-        }
-
-    })
-    return res.status(201).send(JSON.stringify (data))
+    myBooks.insertOne(data)
+       .then(response=>{
+        return res.status(201).send(JSON.stringify(response))
+       })
+       .catch(err=>console.log(err))
 })
 
 //  Added from my pc 
