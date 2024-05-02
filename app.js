@@ -57,13 +57,13 @@ app.post('/admin/savebook', (req, res)=>{
     // Route adds a new book
     const data = req.body
     if(!data.title)
-    return res.status(400).send("No title found ye idiot.")
+    return res.status(400).send({message:"No title found ye idiot."})
 
     if(!data.author)
-    return res.status(400).send("No author here dummy.")
+    return res.status(400).send({message:"No author here dummy."})
 
     if(!data.price)
-    return res.status(400).send("No price here, check somewhere else")
+    return res.status(400).send({message:"No price here, check somewhere else"})
 
     myBooks.insertOne(data)
        .then(response=>{
