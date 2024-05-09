@@ -82,7 +82,10 @@ app.delete('/admin/remove/:id', (req,res)=>{
     
     myBooks.deleteOne(filter)
     .then(response=>{
-        return res.status(200).send(response)
+        if(response.deletedCount)
+            return res.status(200).send({ message: "Book Deleted Successfully"})
+        else
+            return res.status(500).send({ message: "Oops! Something wen't wrong."})
     })
   //return res.status(200).send('<a href='/'> Welcome to de shop! ${data.id}</a>')
   .catch(err=>console.log(err))   
