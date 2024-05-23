@@ -109,7 +109,13 @@ app.put('/admin/update/:id', (req,res)=>{
 
     myBooks.updateOne(filter, updDoc)
    .then(response=>{
-    return res.status(200).send(response)
+        let msg = {}
+            if (!response.matchedCount || !response.modifiedCount)
+                msg = { message: "Oops! Something went wrong!."}
+            else
+                msg = { message: "Update successful."}
+            
+            res.status(200).send(msg)
     
     })
     .catch(err=>console.log(err)) 
